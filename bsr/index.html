@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday SR</title>
+<style>
+  :root{
+    --pink-bg: #ffd6e0;
+    --pink-soft: #ffe9ef;
+    --maroon: #7a1230;
+    --maroon-dark: #5c0d24;
+    --cream: #fff7f2;
+    --text: #4a1120;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--pink-bg);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 80px;
+    position: relative;
+  }
+
+  /* floating petals */
+  .petal {
+    position: fixed;
+    top: -10%;
+    font-size: 18px;
+    opacity: 0.7;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0.2; }
+  }
+
+  .title {
+    text-align: center;
+    font-size: 2.4rem;
+    color: var(--maroon);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 6px;
+    z-index: 1;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 1.4rem;
+    margin: 0 0 26px;
+    z-index: 1;
+  }
+
+  /* envelope */
+  .envelope-wrap {
+    position: relative;
+    width: 280px;
+    height: 190px;
+    cursor: pointer;
+    z-index: 1;
+    perspective: 1000px;
+  }
+
+  .envelope-body {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, var(--maroon) 0%, var(--maroon-dark) 100%);
+    border-radius: 10px;
+    box-shadow: 0 18px 30px rgba(90, 10, 30, 0.35);
+    overflow: hidden;
+  }
+
+  .envelope-flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    background: linear-gradient(160deg, #8f1938, var(--maroon));
+    clip-path: polygon(0 0, 50% 55%, 100% 0);
+    transform-origin: top;
+    transition: transform 0.7s ease;
+    z-index: 3;
+  }
+
+  .envelope-wrap.open .envelope-flap {
+    transform: rotateX(180deg);
+  }
+
+  .envelope-shadow-fold {
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+    background: rgba(0,0,0,0.15);
+    z-index: 2;
+  }
+
+  .seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    z-index: 4;
+  }
+
+  .hint {
+    margin-top: 18px;
+    background: var(--cream);
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    z-index: 1;
+  }
+
+  /* letter */
+  .letter-card {
+    max-width: 480px;
+    width: 100%;
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 44px 32px;
+    margin-top: 30px;
+    box-shadow: 0 20px 40px rgba(90,10,30,0.18);
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    z-index: 1;
+    text-align: center;
+    line-height: 1.85;
+    font-size: 1.08rem;
+  }
+
+  .letter-card.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .letter-card .signature {
+    margin-top: 26px;
+    font-style: italic;
+    color: var(--maroon);
+    font-size: 1.1rem;
+  }
+
+  .close-btn {
+    display: none;
+    margin: 26px auto 0;
+    background: var(--maroon);
+    color: var(--cream);
+    border: none;
+    padding: 10px 26px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .letter-card.show ~ .close-btn,
+  .close-btn.show {
+    display: inline-block;
+  }
+
+  .gallery-section {
+    max-width: 480px;
+    width: 100%;
+    margin-top: 44px;
+    text-align: center;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .gallery-section.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gallery-title {
+    font-size: 1.3rem;
+    color: var(--maroon);
+    margin-bottom: 22px;
+  }
+
+  .gallery-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+  }
+
+  .polaroid {
+    background: var(--cream);
+    padding: 12px 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 12px 24px rgba(90,10,30,0.18);
+    transform: rotate(-2deg);
+    max-width: 300px;
+    width: 85%;
+  }
+
+  .polaroid:nth-child(2) { transform: rotate(2deg); }
+  .polaroid:nth-child(3) { transform: rotate(-1.5deg); }
+
+  .polaroid img {
+    width: 100%;
+    display: block;
+    border-radius: 3px;
+    object-fit: cover;
+  }
+
+  .footer-note {
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: var(--maroon);
+    opacity: 0.75;
+    text-align: center;
+    z-index: 1;
+  }
+
+  @media (max-width: 400px) {
+    .title { font-size: 1.9rem; }
+    .subtitle { font-size: 1.15rem; }
+    .envelope-wrap { width: 240px; height: 165px; }
+    .letter-card { padding: 34px 22px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <div class="title">Happy Birthday</div>
+  <div class="subtitle">Shazin Rafeek 🎀</div>
+
+  <div class="envelope-wrap" id="envelope">
+    <div class="envelope-body">
+      <div class="envelope-shadow-fold"></div>
+    </div>
+    <div class="envelope-flap"></div>
+    <div class="seal">❤️</div>
+  </div>
+
+  <div class="hint" id="hint">Open your letter 💌</div>
+
+  <div class="letter-card" id="letter">
+    <p>Happy birthday ahemm!!</p>
+    <p>Happy birthday to the one who makes everyone's life a little bit better (atleast tries to) 😄</p>
+    <p>Happy birthday to the one who can steal everyone's heart effortlessly.To the one who really matters &lt;3....To my Rapido &gt;&lt;</p>
+    <p>Wishing you a life that you dream of.... May god bless you with lots of joy, health, wealth, happiness and success in your life.</p>
+    <p>In my stories, you will be my favourite chapter 📖💕</p>
+    <div class="signature">your only true friend 💖</div>
+  </div>
+
+  <button class="close-btn" id="closeBtn">Close 💗</button>
+
+  <div class="gallery-section" id="gallery">
+    <div class="gallery-title">a few of my favourites 📸</div>
+    <div class="gallery-grid">
+      <div class="polaroid">
+        <img src="photo1.png.jpg" alt="Shazin at the fort">
+      </div>
+      <div class="polaroid">
+        <img src="photo2.png.jpg" alt="Shazin at the tea garden">
+      </div>
+      <div class="polaroid">
+        <img src="photo3.png.jpg" alt="Shazin at the cabin">
+      </div>
+      <div class="gallery-title">US 📸<p>APZIN</p></div>
+      <div class="polaroid">
+        <img src="photo4.png.jpg" alt="Shazin at the cabin">
+      </div>
+       <div class="polaroid">
+        <img src="photo5.png.jpg" alt="Shazin at the cabin">
+      </div>
+       <div class="polaroid">
+        <img src="photo6.png.jpg" alt="Shazin at the cabin">
+      </div>
+       <div class="polaroid">
+        <img src="photo7.png.jpg" alt="Shazin at the cabin">
+      </div>
+       <div class="polaroid">
+        <img src="photo8.png.jpg" alt="Shazin at the cabin">
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="footer-note">made with love, just for you ✦ happy birthday Shazin 🎀</div>
+
+</div>
+
+<script>
+  const envelope = document.getElementById('envelope');
+  const hint = document.getElementById('hint');
+  const letter = document.getElementById('letter');
+  const closeBtn = document.getElementById('closeBtn');
+  const gallery = document.getElementById('gallery');
+  const stage = document.getElementById('stage');
+
+  function openLetter() {
+    envelope.classList.add('open');
+    setTimeout(() => {
+      letter.classList.add('show');
+      closeBtn.classList.add('show');
+      letter.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 450);
+    setTimeout(() => {
+      gallery.classList.add('show');
+    }, 900);
+    hint.style.display = 'none';
+  }
+
+  function closeLetter() {
+    letter.classList.remove('show');
+    closeBtn.classList.remove('show');
+    gallery.classList.remove('show');
+    envelope.classList.remove('open');
+    hint.style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  envelope.addEventListener('click', openLetter);
+  hint.addEventListener('click', openLetter);
+  closeBtn.addEventListener('click', closeLetter);
+
+  // floating petals background
+  const petals = ['🌸', '💗', '✨', '🎀'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petals[Math.floor(Math.random() * petals.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.fontSize = (14 + Math.random() * 14) + 'px';
+    document.body.appendChild(p);
+  }
+</script>
+
+</body>
+</html>
